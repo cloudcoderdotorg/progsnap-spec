@@ -1,0 +1,3 @@
+baseurl: "http://cloudcoderdotorg.github.io/progsnap-spec"
+markdown: rdiscount
+highlighter: pygments
