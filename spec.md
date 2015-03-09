@@ -33,6 +33,8 @@ Each file is encoded as a sequence of lines.  Each line has the following format
 
 Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonObject* is a single [JSON](http://www.json.org/) object value.  Note that the encoding of *JsonObject* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
 
+Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.
+
 # Basic data types
 
 This section describes the basic data types used in files in progsnap data sets.
@@ -46,12 +48,57 @@ Basic data type | JSON data type | Notes
 *Int*           | number         | Signed, 64 bit
 *Real*          | number         | Floating point, 64 bit
 *String*        | string         | 
+*Timestamp*     | number         | Floating point, 64 bits <sup>\*</sup>
+
+<sup>\*</sup> *Timestamp* is number of milliseconds since midnight, January 1, 1970, UTC
 
 # Complex data types
 
-This section describes the complex data types used in the various types of files in a progsnap data set.  All of the complex data types are represented as JSON objects.  As mentioned above related to file encoding, the JSON encoding of any value (belonging to a complex data type or a basic data type) must not contain any newline characters, so that the encoded value is guaranteed not to span multiple lines of the file that contains it.
+This section describes the complex data types used in the various types of files in a progsnap data set.
 
-TODO: complex data types.
+All of the complex data types are represented as JSON objects. The order of the fields is not specified, and when encoded in JSON, the fields may appear in any order.
+
+All implementations of readers of progsnap data should be prepared to accept fields not mentioned in this specification.  For all complex data types, field names beginning with "x-" are guaranteed not to conflict with any "official" fields, and may be used by the creator of a progsnap data set to store extra information.
+
+As mentioned above related to file encoding, the JSON encoding of any value (belonging to a complex data type or a basic data type) must not contain any newline characters, so that the encoded value is guaranteed not to span multiple lines of the file that contains it. 
+
+## *Dataset*
+
+A *Dataset* value is an object containing metadata about a data set.
+
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+name       | *String*      | yes       | name of data set, e.g., "CS 101, Spring 2015, Unseen University"
+contact    | *String*      | yes       | name of person to contact regarding the data set
+email      | *String*      | yes       | email address of person to contact regarding the data set
+url        | *String*      | no        | optional URL of web page describing the data set
+
+## *Assignment*
+
+An *Assignment* value is an object containing metadata about an assignment.
+
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+name       | *String*      | yes       | the assignment name, e.g., "Assignment 1: Tic-Tac-Toe"
+url        | *String*      | no        | URL of a web page describing the assignment
+path       | *String*      | yes       | path (relative to *BaseDir*) of the assignment file
+assigned   | *Timestamp*   | no        | timestamp indicating when the assignment was made available to students
+due        | *Timestamp*   | yes       | timestamp indicating when the assignment was due
+tests      | *TestList*    | no        | list of tests, if any<sup>\*</sup>
+
+<sup>\*</sup>  A *TestList* should be specified for assignments that have automated tests (e.g., unit tests) associated with them.
+
+## *TestList*
+
+TODO
+
+## *Test*
+
+TODO
+
+## TODO: other complex data types
+
+TODO
 
 # Types of files
 
@@ -61,7 +108,23 @@ This section describes the types of files in a progsnap data set.  For each file
 
 Each progsnap data set contains a single dataset file, whose path (relative to *BaseDir*) is `/dataset.dat`.
 
-TODO: contents
+The dataset file specifies general information about the data set.  It contains the following lines, in the following order.
+
+Tag name | Type of value | Required? | Comment
+-------- | ------------- | --------- | -------
+dataset  | *Dataset*     | Yes       | Metadata about the dataset
+
+## Assignments file
+
+Each progsnap data set contains a single assignments file, whose path (relative to *BaseDir*) is `/assignments.dat`.
+
+The assignments file specifies the assignments that are included in the data set.  It contains zero or more lines of the following form:
+
+Tag name | Type of value
+-------- | -------------
+assignment | *Assignment*
+
+Note that any useful progsnap data set will contain at least one assignment, since work history files are associated with assignments.
 
 ## Student file
 
@@ -71,13 +134,13 @@ TODO: contents
 
 ## Assignment file
 
-A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>/assignment<i>NNNN</i>.dat</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
+A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>/assignment\_<i>NNNN</i>.dat</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
 
 TODO: contents
 
 ## Work history file
 
-A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>/history\_<i>XXXX</i>\_<i>NNNN</i>.dat</code>, where *XXXX* is a student number, and *NNNN* is an assignment number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all assignment filenames in a dataset have the same length.
+A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>/history\_<i>NNNN</i>\_<i>XXXX</i>.dat</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all assignment filenames in a dataset have the same length.
 
 TODO: contents
 
