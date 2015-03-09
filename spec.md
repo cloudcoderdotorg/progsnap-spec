@@ -21,7 +21,7 @@ Version numbers that end in "-dev" are under development, and should be expected
 
 A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course at a single institution, possibly with multiple assignments, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
 
-All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file.  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.
+All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.
 
 Each file is a text file using the UTF-8 character encoding.
 
@@ -33,7 +33,7 @@ Each file is encoded as a sequence of lines.  Each line has the following format
 
 Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonObject* is a single [JSON](http://www.json.org/) object value.  Note that the encoding of *JsonObject* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
 
-Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.
+Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.  Note that the value associated with a custom ("x-") tag must be a JSON object.
 
 # Basic data types
 
@@ -58,7 +58,7 @@ This section describes the complex data types used in the various types of files
 
 All of the complex data types are represented as JSON objects. The order of the fields is not specified, and when encoded in JSON, the fields may appear in any order.
 
-All implementations of readers of progsnap data should be prepared to accept fields not mentioned in this specification.  For all complex data types, field names beginning with "x-" are guaranteed not to conflict with any "official" fields, and may be used by the creator of a progsnap data set to store extra information.
+All implementations of readers of progsnap data should be prepared to accept fields not mentioned in this specification.  For all complex data types, field names beginning with "x-" are guaranteed not to conflict with any "official" fields, and may be used by the creator of a progsnap data set to store extra information.  The value of a custom ("x-") field can be any JSON value.
 
 As mentioned above related to file encoding, the JSON encoding of any value (belonging to a complex data type or a basic data type) must not contain any newline characters, so that the encoded value is guaranteed not to span multiple lines of the file that contains it. 
 
