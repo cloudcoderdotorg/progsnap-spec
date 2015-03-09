@@ -36,7 +36,7 @@ If you would like to be involved, we would love to have your input!  See the Con
 
 People:
 
-* David Hovemeyer, <david.hovemeyer@gmail.com> (primary contact)
+* David Hovemeyer, <dhovemey@ycp.edu> (primary contact)
 * Jaime Spacco, <jspacco@knox.edu>
 * TODO: other people who want to contribute to this specification!
 
