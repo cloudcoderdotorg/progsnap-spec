@@ -28,12 +28,14 @@ Each file is a text file using the UTF-8 character encoding.
 Each file is encoded as a sequence of lines.  Each line has the following format:
 
 <pre>
-{ "tag" : "<i>tagname</i>", "value" : <i>JsonObject</i> }
+{ "tag" : "<i>tagname</i>", "value" : <i>JsonValue</i> }
 </pre>
 
-Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonObject* is a single [JSON](http://www.json.org/) object value.  Note that the encoding of *JsonObject* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
+Each file specifies that lines with specified tags will occur in a specified order.
 
-Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.  Note that the value associated with a custom ("x-") tag must be a JSON object.
+Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
+
+Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.
 
 # Basic data types
 
@@ -75,26 +77,13 @@ url        | *String*      | no        | optional URL of web page describing the
 
 ## *Assignment*
 
-An *Assignment* value is an object containing metadata about an assignment.
+An *Assignment* value is an object specifying the location of an assignment file.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
-name       | *String*      | yes       | the assignment name, e.g., "Assignment 1: Tic-Tac-Toe"
-url        | *String*      | no        | URL of a web page describing the assignment
 path       | *String*      | yes       | path (relative to *BaseDir*) of the assignment file
-assigned   | *Timestamp*   | no        | timestamp indicating when the assignment was made available to students
-due        | *Timestamp*   | yes       | timestamp indicating when the assignment was due
-tests      | *TestList*    | no        | list of tests, if any<sup>\*</sup>
 
-<sup>\*</sup>  A *TestList* should be specified for assignments that have automated tests (e.g., unit tests) associated with them.
-
-## *TestList*
-
-TODO
-
-## *Test*
-
-TODO
+Note that additional information about an assignment, such as metadata and information about tests, is stored in the assignment file (referenced by the path field of the *Assignment*.)
 
 ## TODO: other complex data types
 
@@ -110,19 +99,19 @@ Each progsnap data set contains a single dataset file, whose path (relative to *
 
 The dataset file specifies general information about the data set.  It contains the following lines, in the following order.
 
-Tag name | Type of value | Required? | Comment
--------- | ------------- | --------- | -------
-dataset  | *Dataset*     | Yes       | Metadata about the dataset
+Tag name | Type of value | Occurrences | Comment
+-------- | ------------- | ----------- | -------
+dataset  | *Dataset*     | 1           | Metadata about the dataset
 
 ## Assignments file
 
 Each progsnap data set contains a single assignments file, whose path (relative to *BaseDir*) is `/assignments.dat`.
 
-The assignments file specifies the assignments that are included in the data set.  It contains zero or more lines of the following form:
+The assignments file specifies the assignments that are included in the data set.  It contains the following lines in the following order:
 
-Tag name | Type of value
--------- | -------------
-assignment | *Assignment*
+Tag name | Type of value | Occurrences | Comment
+-------- | ------------- | ----------- | -------
+assignment | *Assignment* | 0..\*      | References to assignment files
 
 Note that any useful progsnap data set will contain at least one assignment, since work history files are associated with assignments.
 
@@ -136,7 +125,15 @@ TODO: contents
 
 A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>/assignment\_<i>NNNN</i>.dat</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
 
-TODO: contents
+The assignment file contains the following lines in the following order:
+
+Tag name   | Type of value | Occurrences | Comment
+---------- | ------------- | ----------- | -------
+name       | *String*      | 1           | the assignment name, e.g., "Assignment 1: Tic-Tac-Toe"
+url        | *String*      | 0..1        | URL of a web page describing the assignment
+assigned   | *Timestamp*   | 0..1        | timestamp indicating when the assignment was made available to students
+due        | *Timestamp*   | 0..1        | timestamp indicating when the assignment was due
+test       | *Test*        | 0..\*       | test cases for the assignment
 
 ## Work history file
 
