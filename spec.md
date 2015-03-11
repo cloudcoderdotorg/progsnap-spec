@@ -31,9 +31,15 @@ Each file is encoded as a sequence of lines.  Each line has the following format
 { "tag" : "<i>tagname</i>", "value" : <i>JsonValue</i> }
 </pre>
 
-Each file specifies that lines with specified tags will occur in a specified order.
-
 Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
+
+Each file specifies that lines with specified tags will occur in a specified order.  Each type of line is specified with a number of occurrences:
+
+Occurrences | Meaning
+----------- | -------
+1           | A line with this tag must occur exactly one time
+0..1        | A line with this tag is optional: there may be either 0 or 1 occurrences
+0..\*       | There may be any number of occurrences (0 or more) of lines with this tag
 
 Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Readers of progsnap data should ignore lines with such tags, or allow custom processing for them.
 
@@ -64,16 +70,6 @@ All implementations of readers of progsnap data should be prepared to accept fie
 
 As mentioned above related to file encoding, the JSON encoding of any value (belonging to a complex data type or a basic data type) must not contain any newline characters, so that the encoded value is guaranteed not to span multiple lines of the file that contains it. 
 
-## *Dataset*
-
-A *Dataset* value is an object containing metadata about a data set.
-
-Field name | Type of value | Required? | Comment
----------- | ------------- | --------- | -------
-name       | *String*      | yes       | name of data set, e.g., "CS 101, Spring 2015, Unseen University"
-contact    | *String*      | yes       | name of person to contact regarding the data set
-email      | *String*      | yes       | email address of person to contact regarding the data set
-url        | *String*      | no        | optional URL of web page describing the data set
 
 ## *Assignment*
 
@@ -101,7 +97,11 @@ The dataset file specifies general information about the data set.  It contains 
 
 Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
-dataset  | *Dataset*     | 1           | Metadata about the dataset
+psversion | *String*     | 1           | the version of the progsnap specification the data set conforms to, e.g., "0.0"
+name     | *String*      | 1           | name of data set, e.g., "CS 101, Spring 2015, Unseen University"
+contact  | *String*      | 1           | name of person to contact regarding the data set
+email    | *String*      | 1           | email address of person to contact regarding the data set
+url      | *String*      | 0..1        | optional URL of web page describing the data set
 
 ## Assignments file
 
