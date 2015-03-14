@@ -21,7 +21,7 @@ Coming soon: code to read progsnap data, export progsnap data from various syste
 
 # Who is this for?
 
-This is for researchers in CS education, software engineering, and programming languages, who are interested in using student programming data in their research.  By defining a common format for programming assignment data, progsnap enables researchers to share data, and facilitates research that spans multiple institutions and courses.
+This is for researchers in CS education, software engineering, and programming languages who are interested in using student programming data in their research.  By defining a common format for programming assignment data, progsnap enables researchers to share data, and facilitates research that spans multiple institutions and courses.
 
 A number of educational programming environments capture fine-grained data as students work.  For example:
 
