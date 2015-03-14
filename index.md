@@ -9,11 +9,15 @@ Progsnap is a data format for programming assignment snapshots.
 
 It is intended to allow sharing and analysis of data on student work on programming assignments and exercises.  In particular, it is designed to support fine-grained data such as keystroke-level edit events.
 
-# Resources
+# Specification
 
-The [specification](spec.html) documents the data format.
+Each official progsnap specification has a version number.  Currently, there are no official progsnap specifications.
 
-Coming soon: code to read progsnap data, export progsnap data from various tools/systems.
+The current development version of the progsnap specification is [0.1-dev](spec-0.1-dev.html).  The development version is a work in progress, and should be considered to be unofficial.
+
+# Tools
+
+Coming soon: code to read progsnap data, export progsnap data from various systems.
 
 # Who is this for?
 

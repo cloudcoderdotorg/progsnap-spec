@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Specification"
+title: "Specification 0.1-dev"
 ---
 
 # Introduction
@@ -13,7 +13,7 @@ This specification is at a very early stage of development.  If you'd like to co
 
 # Version
 
-This is version **0.0-dev**.
+This is version **0.1-dev**.
 
 Version numbers that end in "-dev" are under development, and should be expected to change.
 
