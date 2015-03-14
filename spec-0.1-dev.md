@@ -118,19 +118,39 @@ finalgrade | *Real*        | no        | Final grade in the course
 
 ## *Edit*
 
-TODO
+Edit events represent changes in the text of a source file.
+
+Source file text is modeled as a sequence of lines.  Each line is a sequence of characters.  Lines in the file and characters within a line are both indexed starting at 0.  At the beginning of a student work history, each file is assumed to be empty.  So, the first edit for a file is relative to an empty file.
+
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+ts         | *Timestamp*   | yes       | Timestamp of edit event
+filename   | *String*      | yes       | Filename of the edited source file
+type       | *String*      | yes       | Type of edit: "fulltext", "insert", or "delete"
+location   | *Position*    | yes<sup>\*</sup> | Position in file
+text       | *String*      | yes       | Text 
+
+<sup>\*</sup> location is only required for "insert" and "delete" edits, it may be omitted for "fulltext" edits
+
+TODO: describe types of edit events
 
 ## *Submission*
 
-TODO
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+ts         | *Timestamp*   | yes       | Timestamp of submission event
 
 ## *Compilation*
 
-TODO
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+ts         | *Timestamp*   | yes       | Timestamp of compilation event
 
 ## *TestResults*
 
-TODO
+Field name | Type of value | Required? | Comment
+---------- | ------------- | --------- | -------
+ts         | *Timestamp*   | yes       | Timestamp of test results event
 
 ## TODO: other complex data types
 
@@ -189,6 +209,7 @@ An assignment file contains the following lines in the following order:
 Tag name   | Type of value | Occurrences | Comment
 ---------- | ------------- | ----------- | -------
 name       | *String*      | 1           | the assignment name, e.g., "Assignment 1: Tic-Tac-Toe"
+language   | *String*      | 1           | the programming language (e.g., "Java", "Python", "C++")
 url        | *String*      | 0..1        | URL of a web page describing the assignment
 assigned   | *Timestamp*   | 0..1        | timestamp indicating when the assignment was made available to students)
 due        | *Timestamp*   | 0..1        | timestamp indicating when the assignment was due
