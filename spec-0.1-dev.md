@@ -31,7 +31,7 @@ Each file (with the exception of README.txt) is encoded as a sequence of lines. 
 { "tag" : "<i>tagname</i>", "value" : <i>JsonValue</i> }
 </pre>
 
-Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.
+Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.  Note that the line may or may not contain horizontal whitespace between the JSON tokens.
 
 Each file specifies that lines with specified tags will occur in a specified order.  Each type of line is specified with a number of occurrences:
 
@@ -77,6 +77,7 @@ An *Assignment* value is an object specifying the location of an assignment file
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
+number     | *Int*         | yes       | assignment number, which is distinct from assignment numbers of other assignments in the data set
 path       | *String*      | yes       | path (relative to *BaseDir*) of the assignment file
 
 Note that additional information about an assignment, such as metadata and information about tests, is stored in the assignment file (referenced by the path field of the *Assignment*.)
@@ -85,7 +86,7 @@ Note that additional information about an assignment, such as metadata and infor
 
 A *Test* value is an automated test (such as a unit test) associated with an assignment.
 
-Because of the great diversity of programming languages and testing approaches that could be used in an assignment in a progsnap data set, *Test* values are not intended to precisely capture the exact semantics of a test.
+Because of the great diversity of programming languages and testing approaches that could be used in an assignment in a progsnap data set, *Test* values are not intended to capture the exact semantics of a test.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
@@ -115,6 +116,15 @@ finalgrade | *Real*        | no        | Final grade in the course
 <sup>\*</sup> Instructors and teaching assistants will often have accounts for testing purposes; this field is used to identify those accounts
 
 <sup>&dagger;</sup> Possible values include "m" and "f", but implementations should accept other values
+
+## *Position*
+
+A *Position* value represents a position in a file.
+
+Field name | Type of value | Required | Comment
+---------- | ------------- | -------- | -------
+line       | *Int*         | yes      | line number (0 is first line of file)
+column     | *Int*         | yes      | column number within line (0 is first column)
 
 ## *Edit*
 
