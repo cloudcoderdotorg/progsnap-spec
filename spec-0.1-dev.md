@@ -123,8 +123,10 @@ A *Position* value represents a position in a file.
 
 Field name | Type of value | Required | Comment
 ---------- | ------------- | -------- | -------
-line       | *Int*         | yes      | line number (0 is first line of file)
-column     | *Int*         | yes      | column number within line (0 is first column)
+startline  | *Int*         | yes      | start line number (0 is first line of file)
+startcol   | *Int*         | yes      | start column number within line (0 is first column)
+endline    | *Int*         | yes      | end line number (0 is first line of file)
+endcol     | *Int*         | yes      | end column number within line (0 is first column)
 
 ## *Edit*
 
