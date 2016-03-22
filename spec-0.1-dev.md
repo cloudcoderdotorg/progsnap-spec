@@ -86,7 +86,7 @@ Note that additional information about an assignment, such as metadata and infor
 
 A *Test* value is an automated test (such as a unit test) associated with an assignment.
 
-Because of the great diversity of programming languages and testing approaches that could be used in an assignment in a progsnap data set, *Test* values are not intended to capture the exact semantics of a test.
+Because of the great diversity of programming languages and testing approaches that could be used in an assignment in a progsnap data set, *Test* values are not guaranteed to capture the exact semantics of a test.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
