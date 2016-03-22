@@ -123,10 +123,8 @@ A *Position* value represents a position in a file.
 
 Field name | Type of value | Required | Comment
 ---------- | ------------- | -------- | -------
-startline  | *Int*         | yes      | start line number (0 is first line of file)
-startcol   | *Int*         | yes      | start column number within line (0 is first column)
-endline    | *Int*         | yes      | end line number (0 is first line of file)
-endcol     | *Int*         | yes      | end column number within line (0 is first column)
+row        | *Int*         | yes      | row (i.e., line) number (0 is first row of file)
+col        | *Int*         | yes      | column number within line (0 is first column of a row)
 
 ## *Edit*
 
@@ -137,26 +135,49 @@ Source file text is modeled as a sequence of lines.  Each line is a sequence of 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of edit event
+id         | *Int*         | yes       | Unique<sup>\*</sup> id of the edit event
 filename   | *String*      | yes       | Filename of the edited source file
 type       | *String*      | yes       | Type of edit: "fulltext", "insert", or "delete"
-location   | *Position*    | yes<sup>\*</sup> | Position in file
+start      | *Position*    | yes<sup>&dagger;</sup> | Start position in file
+end        | *Position*    | yes<sup>&dagger;</sup> | End position in file
 text       | *String*      | yes       | Text 
 
-<sup>\*</sup> location is only required for "insert" and "delete" edits, it may be omitted for "fulltext" edits
+<sup>\*</sup> Each edit event must be assigned an id that is unique within the context of the file in which it appears.  These ids are not necessarily unique over all files, although they could be.
 
-TODO: describe types of edit events
+<sup>&dagger;</sup> start and end fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
+
+Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The start and end fields indicate the start and end of the block of text specified by the event.
+
+"fulltext" edit events should be considered to completely replace the contents of a file.  As mentioned above, they are not required to have start and end fields.
 
 ## *Submission*
+
+Submission events indicate that the student submitted code for grading/assessment.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of submission event
+editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+
+FIXME: what if there are multiple files?
 
 ## *Compilation*
+
+Compilation events indicate that a student's submission was compiled.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of compilation event
+editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+result     | *String*      | yes       | Result of compilation: "success" or "failure"
+
+TODO: allow compiler diagnostics to be recorded?
+
+The editid of a compilation event should exactly match the editid of the submission to which the compilation corresponds.
+
+A compilation result of "success" means that the submission was successfully translated to executable form.  Note that this does not imply that there were no warnings or other compiler diagnostics.
+
+A compilation result of "failure" means that submission could not be translated to executable form, most likely because of syntactic or semantic errors in the submitted code.
 
 ## *TestResults*
 
@@ -231,7 +252,7 @@ test       | *Test*        | 0..\*       | test cases for the assignment
 
 A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>/history\_<i>NNNN</i>\_<i>XXXX</i>.dat</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
 
-Each line in a work history file represents an event.  One common feature of each event is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  The lines in a work history file (with the possible exception of lines with custom tags) are ordered by nondecreasing event timestamp values.
+Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  The lines in a work history file (with the possible exception of lines with custom tags) are ordered by nondecreasing event timestamp values.
 
 The types of lines (representing events) are the following (note that this table does *not* indicate a required order, since events are ordered by timestamp):
 
