@@ -19,7 +19,7 @@ Version numbers that end in "-dev" are under development, and should be expected
 
 # Data set, file encoding
 
-A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course at a single institution, possibly with multiple assignments, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
+A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course, possibly with multiple assignments, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
 
 All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.
 
@@ -96,6 +96,8 @@ input      | *String*      | no        | test input (e.g., argument values or in
 output     | *String*      | no        | expected output (e.g., result value, output data, regexp, etc.)
 opaque     | *Boolean*     | no        | if true, test input/output is not revealed to students
 invisible  | *Boolean*     | no        | if true, the existence of the test is not revealed to students
+
+Test numbers must start at 0.
 
 If either the opaque or invisible field is not present, the implied default value is false.
 
@@ -181,9 +183,26 @@ A compilation result of "failure" means that submission could not be translated 
 
 ## *TestResults*
 
+A *TestResults* event records the 
+
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of test results event
+editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+numtests   | *Int*         | yes       | Total number of tests executed
+numpassed  | *Int*         | yes       | Number of tests passed
+statuses   | Array of *String* | yes | Array of test statuses, which are "passed", "failed", "timeout", and "exception"
+
+Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the order of the *Test* records in the corresponding assignment file.  The number of a test can be used as an index into the statuses array.
+
+The meanings of the test statuses are as follows:
+
+Status     | Meaning
+---------- | -----------
+passed     | The test passed
+failed     | The test failed due to incorrect output/behavior
+timeout    | The test failed because it exceeded the allowed runtime
+exception  | The test failed due to a fatal exception
 
 ## TODO: other complex data types
 
