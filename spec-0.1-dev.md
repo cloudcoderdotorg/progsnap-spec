@@ -21,7 +21,7 @@ Version numbers that end in "-dev" are under development, and should be expected
 
 A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course, possibly with multiple assignments, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
 
-All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.
+All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.  Note that some files are in subdirectories in *BaseDir*.  For example, assignment files have filenames of the form <code>/assignment/<i>NNNN</i>.txt</code>, where <i>NNNN</i> is an assignment number, implying the existence of a subdirectory called <code>assignment</code> in *BaseDir*.
 
 Each file is a text file using the UTF-8 character encoding.
 
@@ -41,7 +41,7 @@ Occurrences | Meaning
 0..1        | A line with this tag is optional: there may be either 0 or 1 occurrences
 0..\*       | There may be any number of occurrences (0 or more) of lines with this tag
 
-Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Lines with custom tags may occur anywhere within any file in a progsnap data set.  Readers of progsnap data should ignore lines with such tags, or allow custom processing of them.
+Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Lines with custom tags may occur anywhere within any file in a progsnap data set.  Readers of progsnap data should ignore lines with such tags, or allow custom processing of them.  Note that such lines must still encode a valid JSON object with `tag` and `value` fields.
 
 # Basic data types
 
@@ -254,7 +254,7 @@ student  | *Student*     | 0..\*       | Information about a student
 
 ## Assignment file
 
-A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>/assignment\_<i>NNNN</i>.dat</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
+A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>/assignment/<i>NNNN</i>.dat</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
 
 An assignment file contains the following lines in the following order:
 
@@ -269,7 +269,7 @@ test       | *Test*        | 0..\*       | test cases for the assignment
 
 ## Work history file
 
-A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>/history\_<i>NNNN</i>\_<i>XXXX</i>.dat</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
+A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>/history/<i>NNNN</i>/<i>XXXX</i>.dat</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
 
 Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  The lines in a work history file (with the possible exception of lines with custom tags) are ordered by nondecreasing event timestamp values.
 
