@@ -8,7 +8,7 @@ title: "Specification 0.1-dev"
 Progsnap is a specification for data on student work on programming exercises and assignments.
 
 <div class="callout">
-This specification is at a very early stage of development.  If you'd like to contribute, see the <a href="index.html">home page</a> for contact info.
+This specification is at an early stage of development, although it is well-specified enough to be useful in its current form.  If you'd like to contribute, see the <a href="index.html">home page</a> for contact info.
 </div>
 
 # Version
@@ -140,13 +140,16 @@ ts         | *Timestamp*   | yes       | Timestamp of edit event
 id         | *Int*         | yes       | Unique<sup>\*</sup> id of the edit event
 filename   | *String*      | yes       | Filename of the edited source file
 type       | *String*      | yes       | Type of edit: "fulltext", "insert", or "delete"
-start      | *Position*    | yes<sup>&dagger;</sup> | Start position in file
-end        | *Position*    | yes<sup>&dagger;</sup> | End position in file
+start      | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | Start position in file
+end        | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | End position in file
 text       | *String*      | yes       | Text 
+snapid     | *Int*         | only for "snapshot" events<sup>&Dagger;</sup> | Snapshot id (corresponding to *Submission*, *Compilation*, and/or *TestResults* events)
 
-<sup>\*</sup> Each edit event must be assigned an id that is unique within the context of the file in which it appears.  These ids are not necessarily unique over all files, although they could be.
+<sup>\*</sup> Each edit event must be assigned an id that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
 
 <sup>&dagger;</sup> start and end fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
+
+<sup>&Dagger;</sup> snapid is a unique identifier indicating a *snapshot*.  A snapshot is one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults*.  If the assignment involves multiple files, then each edit event belonging to the snapshot should have the same snapid.  If the assignment involves only a single file, then the snapid could be the same as the edit event's id, although consumers of progsnap data should not assume this.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text by applying a series of individual edits.  Similar to id, snapid is guaranteed to be unique only within the work history file in which it appears.
 
 Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The start and end fields indicate the start and end of the block of text specified by the event.
 
@@ -159,9 +162,9 @@ Submission events indicate that the student submitted code for grading/assessmen
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of submission event
-editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+snapid     | *Int*         | yes       | Snapshot id identifying text of submitted code
 
-FIXME: what if there are multiple files?
+The snapid value specifies the snapshot identifying the submitted source file or files.
 
 ## *Compilation*
 
@@ -170,12 +173,12 @@ Compilation events indicate that a student's submission was compiled.
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of compilation event
-editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+snapid     | *Int*         | yes       | Snapshot id identifying text of submitted code
 result     | *String*      | yes       | Result of compilation: "success" or "failure"
 
 TODO: allow compiler diagnostics to be recorded?
 
-The editid of a compilation event should exactly match the editid of the submission to which the compilation corresponds.
+The snapid value specifies the snapshot identifying the compiled source file or files.  It is guaranteed that there will be a *Submission* with the same snapid.
 
 A compilation result of "success" means that the submission was successfully translated to executable form.  Note that this does not imply that there were no warnings or other compiler diagnostics.
 
@@ -188,10 +191,12 @@ A *TestResults* event records the
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of test results event
-editid     | *Int*         | yes       | Unique id of edit event specifying text of submitted code
+snapid     | *Int*         | yes       | Snapshot id identifying text of submitted code
 numtests   | *Int*         | yes       | Total number of tests executed
 numpassed  | *Int*         | yes       | Number of tests passed
 statuses   | Array of *String* | yes | Array of test statuses, which are "passed", "failed", "timeout", and "exception"
+
+The snapid value specifies the snapshot identifying the source file or files compiled to produce the tested executable.  It is guaranteed that there will be a *Compilation* with the same snapid.
 
 Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the order of the *Test* records in the corresponding assignment file.  The number of a test can be used as an index into the statuses array.
 
@@ -203,10 +208,6 @@ passed     | The test passed
 failed     | The test failed due to incorrect output/behavior
 timeout    | The test failed because it exceeded the allowed runtime
 exception  | The test failed due to a fatal exception
-
-## TODO: other complex data types
-
-TODO
 
 # Types of files
 

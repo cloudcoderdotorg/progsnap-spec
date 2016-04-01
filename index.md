@@ -13,7 +13,11 @@ It is intended to allow sharing and analysis of data on student work on programm
 
 Each official progsnap specification has a version number.  Currently, there are no official progsnap specifications.
 
-The current development version of the progsnap specification is [0.1-dev](spec-0.1-dev.html).  The development version is a work in progress, and should be considered to be unofficial.
+The current development version of the progsnap specification is:
+
+<div style="margin-left: 40px;">Click here &rArr; <a style="font-size: 160%; font-weight: bold;" href="spec-0.1-dev.html">0.1-dev</a> &lArr; Click here</div>
+
+Note that version numbers that end in "-dev" are under development, and should be expected to change.
 
 # Tools
 
