@@ -137,7 +137,7 @@ Source file text is modeled as a sequence of lines.  Each line is a sequence of 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
 ts         | *Timestamp*   | yes       | Timestamp of edit event
-id         | *Int*         | yes       | Unique<sup>\*</sup> id of the edit event
+editid     | *Int*         | yes       | Unique<sup>\*</sup> id of the edit event
 filename   | *String*      | yes       | Filename of the edited source file
 type       | *String*      | yes       | Type of edit: "fulltext", "insert", or "delete"
 start      | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | Start position in file
@@ -145,7 +145,7 @@ end        | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup
 text       | *String*      | yes       | Text 
 snapids    | Array of *Int*  | only for "snapshot" events<sup>&Dagger;</sup> | Array of snapshot ids (corresponding to *Submission*, *Compilation*, and/or *TestResults* events)
 
-<sup>\*</sup> Each edit event must be assigned an `id` that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
+<sup>\*</sup> Each edit event must be assigned an `editid` that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
 
 <sup>&dagger;</sup> `start` and `end` fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
 
