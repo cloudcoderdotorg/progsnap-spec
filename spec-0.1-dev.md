@@ -143,15 +143,15 @@ type       | *String*      | yes       | Type of edit: "fulltext", "insert", or 
 start      | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | Start position in file
 end        | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | End position in file
 text       | *String*      | yes       | Text 
-snapid     | *Int*         | only for "snapshot" events<sup>&Dagger;</sup> | Snapshot id (corresponding to *Submission*, *Compilation*, and/or *TestResults* events)
+snapids    | Array of *Int*  | only for "snapshot" events<sup>&Dagger;</sup> | Array of snapshot ids (corresponding to *Submission*, *Compilation*, and/or *TestResults* events)
 
-<sup>\*</sup> Each edit event must be assigned an id that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
+<sup>\*</sup> Each edit event must be assigned an `id` that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
 
-<sup>&dagger;</sup> start and end fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
+<sup>&dagger;</sup> `start` and `end` fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
 
-<sup>&Dagger;</sup> snapid is a unique identifier indicating a *snapshot*.  A snapshot is one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults*.  If the assignment involves multiple files, then each edit event belonging to the snapshot should have the same snapid.  If the assignment involves only a single file, then the snapid could be the same as the edit event's id, although consumers of progsnap data should not assume this.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text by applying a series of individual edits.  Similar to id, snapid is guaranteed to be unique only within the work history file in which it appears.
+<sup>&Dagger;</sup> `snapids` is a list of unique identifiers (encoded as a JSON array of *Int* values) indicating one or more *snapshots*.  A snapshot consists of one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults* (one edit event per file).  Because a specific version of a file can be part of multiple snapshots, an edit event can have multiple snapshot ids.  If the assignment involves multiple files, then each edit event belonging to a specific snapshot should include the corresponding snapshot id as one of the values of its `snapids` field.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text of the file or files by applying a series of individual edits.  Like edit ids, snapshot ids are guaranteed to be unique only within the work history file in which they appear.
 
-Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The start and end fields indicate the start and end of the block of text specified by the event.
+Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The `start` and `end` fields indicate the start and end of the block of text specified by the event.
 
 "fulltext" edit events should be considered to completely replace the contents of a file.  As mentioned above, they are not required to have start and end fields.
 
@@ -186,7 +186,7 @@ A compilation result of "failure" means that submission could not be translated 
 
 ## *TestResults*
 
-A *TestResults* event records the 
+A *TestResults* event records the results of running tests on a compiled *Submission*.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
