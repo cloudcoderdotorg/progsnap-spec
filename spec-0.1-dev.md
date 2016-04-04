@@ -99,7 +99,7 @@ invisible  | *Boolean*     | no        | if true, the existence of the test is n
 
 Test numbers must start at 0.
 
-If either the opaque or invisible field is not present, the implied default value is false.
+If either the `opaque` or `invisible` field is not present, the implied default value is false.
 
 ## *Student*
 
@@ -164,7 +164,7 @@ Field name | Type of value | Required? | Comment
 ts         | *Timestamp*   | yes       | Timestamp of submission event
 snapid     | *Int*         | yes       | Snapshot id identifying text of submitted code
 
-The snapid value specifies the snapshot identifying the submitted source file or files.
+The `snapid` value specifies the snapshot identifying the submitted source file or files.
 
 ## *Compilation*
 
@@ -178,11 +178,11 @@ result     | *String*      | yes       | Result of compilation: "success" or "fa
 
 TODO: allow compiler diagnostics to be recorded?
 
-The snapid value specifies the snapshot identifying the compiled source file or files.  It is guaranteed that there will be a *Submission* with the same snapid.
+The `snapid` value specifies the snapshot identifying the compiled source file or files.  It is guaranteed that there will be a *Submission* with the same `snapid`.
 
-A compilation result of "success" means that the submission was successfully translated to executable form.  Note that this does not imply that there were no warnings or other compiler diagnostics.
+A `result` value of "success" means that the submission was successfully translated to executable form.  Note that this does not imply that there were no warnings or other compiler diagnostics.
 
-A compilation result of "failure" means that submission could not be translated to executable form, most likely because of syntactic or semantic errors in the submitted code.
+A `result` of "failure" means that submission could not be translated to executable form, most likely because of syntactic or semantic errors in the submitted code.
 
 ## *TestResults*
 
@@ -196,11 +196,11 @@ numtests   | *Int*         | yes       | Total number of tests executed
 numpassed  | *Int*         | yes       | Number of tests passed
 statuses   | Array of *String* | yes | Array of test statuses, which are "passed", "failed", "timeout", and "exception"
 
-The snapid value specifies the snapshot identifying the source file or files compiled to produce the tested executable.  It is guaranteed that there will be a *Compilation* with the same snapid.
+The `snapid value` specifies the snapshot identifying the source file or files compiled to produce the tested executable.  It is guaranteed that there will be a *Compilation* with the same `snapid`.
 
 Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the order of the *Test* records in the corresponding assignment file.  The number of a test can be used as an index into the statuses array.
 
-The meanings of the test statuses are as follows:
+The meanings of the values in the `statuses` array are as follows:
 
 Status     | Meaning
 ---------- | -----------
