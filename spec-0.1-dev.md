@@ -82,6 +82,8 @@ path       | *String*      | yes       | path (relative to *BaseDir*) of the ass
 
 Note that additional information about an assignment, such as metadata and information about tests, is stored in the assignment file (referenced by the path field of the *Assignment*.)
 
+The `path` value identifying the path to the corresponding assignment file is relative to *BaseDir*: for example, if the assignment number is 221, then the `path` value might be `assignment/0221.txt`.
+
 ## *Test*
 
 A *Test* value is an automated test (such as a unit test) associated with an assignment.
