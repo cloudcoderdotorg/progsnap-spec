@@ -33,7 +33,7 @@ Each file (with the exception of README.txt) is encoded as a sequence of lines. 
 
 Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.  Note that the line may or may not contain horizontal whitespace between the JSON tokens.
 
-Each file specifies that lines with specified tags will occur in a specified order.  Each type of line is specified with a number of occurrences:
+Each file is a collection of lines, with tags and values specified in the file type's description (see <i>Types of files</i> below).  Each type of line is specified with a number of occurrences:
 
 Occurrences | Meaning
 ----------- | -------
@@ -42,6 +42,8 @@ Occurrences | Meaning
 0..\*       | There may be any number of occurrences (0 or more) of lines with this tag
 
 Tag names starting with "x-" are guaranteed not to conflict with any official tag name, and lines containing such tags may be used by creators of progsnap data sets to store extra information.  Lines with custom tags may occur anywhere within any file in a progsnap data set.  Readers of progsnap data should ignore lines with such tags, or allow custom processing of them.  Note that such lines must still encode a valid JSON object with `tag` and `value` fields.
+
+Unless explicitly stated in the file type's description, there is *no* required ordering of lines in a file, and readers should be prepared to encounter the lines in an arbitrary order.  One important file type that *does* mandate ordering of lines is the <i>Work history</i> file type.
 
 # Basic data types
 
@@ -73,6 +75,10 @@ As mentioned above related to file encoding, the JSON encoding of any value (bel
 
 ## *Assignment*
 
+<div class="callout">
+This data type is likely to be renamed "Activity".
+</div>
+
 An *Assignment* value is an object specifying the location of an assignment file.
 
 Field name | Type of value | Required? | Comment
@@ -99,11 +105,15 @@ output     | *String*      | no        | expected output (e.g., result value, ou
 opaque     | *Boolean*     | no        | if true, test input/output is not revealed to students
 invisible  | *Boolean*     | no        | if true, the existence of the test is not revealed to students
 
-Test numbers must start at 0.
+Test numbers must start at 0 and increase by 1 for each test in the corresponding assignment.  For example, an assignment with 4 tests would have tests with numbers 0, 1, 2, and 3.
 
 If either the `opaque` or `invisible` field is not present, the implied default value is false.
 
 ## *Student*
+
+<div class="callout">
+Upcoming change: student numbers (<i>Int</i>) are going to become student identifiers (<i>String</i>), to permit more flexibility in identifying students in a way that is natural for the underlying dataset.  Also, more detailed grade data will become part of this data type.
+</div>
 
 A *Student* value is an object containing anonymized information about a student.
 
@@ -132,9 +142,15 @@ col        | *Int*         | yes      | column number within line (0 is first co
 
 ## *Edit*
 
+<div class="callout">
+This section is due to be rewritten to make it more clear.  Also, some details may change.
+</div>
+
 Edit events represent changes in the text of a source file.
 
-Source file text is modeled as a sequence of lines.  Each line is a sequence of characters.  Lines in the file and characters within a line are both indexed starting at 0.  At the beginning of a student work history, each file is assumed to be empty.  So, the first edit for a file is relative to an empty file.
+Source file text is modeled as a sequence of lines.  Each line is a sequence of characters.  Lines in the file and characters within a line are indexed starting at 0.  At the beginning of a student work history, each file is assumed to be empty.  So, the first edit for a file is relative to an empty file.  All insertion and deletion events specify the exact text to be inserted into or deleted from the source text.
+
+Lines in source file text are terminated by a single newline ("\\n") character.  Exporters for progsnap data must convert other line termination characters or sequences to single newline characters.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
@@ -142,18 +158,17 @@ ts         | *Timestamp*   | yes       | Timestamp of edit event
 editid     | *Int*         | yes       | Unique<sup>\*</sup> id of the edit event
 filename   | *String*      | yes       | Filename of the edited source file
 type       | *String*      | yes       | Type of edit: "fulltext", "insert", or "delete"
-start      | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | Start position in file
-end        | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | End position in file
-text       | *String*      | yes       | Text 
+start      | *Position*    | yes, except for "fulltext" events<sup>&dagger;</sup> | Position in source file where text is being inserted or deleted
+text       | *String*      | yes       | The text being inserted or deleted ("insert" or "delete" events), or the text replacing the entire file contents ("fulltext" events)
 snapids    | Array of *Int*  | only for "snapshot" events<sup>&Dagger;</sup> | Array of snapshot ids (corresponding to *Submission*, *Compilation*, and/or *TestResults* events)
 
 <sup>\*</sup> Each edit event must be assigned an `editid` that is unique within the context of the work history file in which it appears.  These ids are not necessarily unique over all work history files, although they could be.
 
-<sup>&dagger;</sup> `start` and `end` fields are only required for "insert" and "delete" edits; they may be omitted for "fulltext" edits
+<sup>&dagger;</sup> The `start` field is only required for "insert" and "delete" edits; it may be omitted for "fulltext" edits
 
 <sup>&Dagger;</sup> `snapids` is a list of unique identifiers (encoded as a JSON array of *Int* values) indicating one or more *snapshots*.  A snapshot consists of one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults* (one edit event per file).  Because a specific version of a file can be part of multiple snapshots, an edit event can have multiple snapshot ids.  If the assignment involves multiple files, then each edit event belonging to a specific snapshot should include the corresponding snapshot id as one of the values of its `snapids` field.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text of the file or files by applying a series of individual edits.  Like edit ids, snapshot ids are guaranteed to be unique only within the work history file in which they appear.
 
-Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The `start` and `end` fields indicate the start and end of the block of text specified by the event.
+Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The `start`  field indicates the position in the edited file at which the specified `text` should be inserted or deleted.
 
 "fulltext" edit events should be considered to completely replace the contents of a file.  As mentioned above, they are not required to have start and end fields.
 
@@ -188,6 +203,10 @@ A `result` value of "failure" means that submission could not be translated to e
 
 ## *TestResults*
 
+<div class="callout">
+Upcoming change: more information about test outcome (e.g., diagnostics that are only detected at runtime in dynamic languages.)
+</div>
+
 A *TestResults* event records the results of running tests on a compiled *Submission*.
 
 Field name | Type of value | Required? | Comment
@@ -200,7 +219,7 @@ statuses   | Array of *String* | yes | Array of test statuses, which are "passed
 
 The `snapid` value specifies the snapshot identifying the source file or files compiled to produce the tested executable.  It is guaranteed that there will be a *Compilation* with the same `snapid`.
 
-Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the order of the *Test* records in the corresponding assignment file.  The number of a test can be used as an index into the statuses array.
+Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the numbering of the *Test*s in the *Assignment*: i.e., the `number` of a test can be used as an index into the `statuses` array.
 
 The meanings of the values in the `statuses` array are as follows:
 
@@ -213,7 +232,7 @@ exception  | The test failed due to a fatal exception
 
 # Types of files
 
-This section describes the types of files in a progsnap data set.  For each file type, there is a particular naming scheme that instances of the file type must follow, and there are specific tagged values which may appear in the file, in a specified order.
+This section describes the types of files in a progsnap data set.  For each file type, there is a particular naming scheme that instances of the file type must follow, and there are specific tagged values which may appear in the file.  Some file types may mandate a particular ordering of lines.
 
 ## README.txt
 
@@ -223,7 +242,7 @@ Each progsnap data set should have a file whose path (relative to *BaseDir*) is 
 
 Each progsnap data set contains a single dataset file, whose path (relative to *BaseDir*) is `dataset.txt`.
 
-The dataset file specifies general information about the data set.  It contains the following lines, in the following order.
+The dataset file specifies general information about the data set.  It contains the following lines:
 
 Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
@@ -237,7 +256,7 @@ courseurl | *String*      | 0..1        | optional URL of web page for the cours
 
 Each progsnap data set contains a single assignments file, whose path (relative to *BaseDir*) is `assignments.txt`.
 
-The assignments file specifies the assignments that are included in the data set.  It contains the following lines in the following order:
+The assignments file specifies the assignments that are included in the data set.  It contains the following lines:
 
 Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
@@ -249,7 +268,7 @@ Note that any useful progsnap data set will contain at least one assignment, sin
 
 A progsnap data set may optionally contain a single students file, whose path (if present, relative to *BaseDir*) is `students.txt`.
 
-The students file specifies anonymized information about students in the course the data set represents.  It contains the following lines in the following order:
+The students file specifies anonymized information about students in the course the data set represents.  It contains the following lines:
 
 Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
@@ -259,7 +278,7 @@ student  | *Student*     | 0..\*       | Information about a student
 
 A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>assignment/<i>NNNN</i>.txt</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
 
-An assignment file contains the following lines in the following order:
+An assignment file contains the following lines:
 
 Tag name   | Type of value | Occurrences | Comment
 ---------- | ------------- | ----------- | -------
@@ -274,7 +293,9 @@ test       | *Test*        | 0..\*       | test cases for the assignment
 
 A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
 
-Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  The lines in a work history file (with the possible exception of lines with custom tags) are ordered by nondecreasing event timestamp values.
+Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  Exporters must ensure that timestamps match the chronology of the work history, and due to the vagaries of clocks, some post-processing may be necessary to ensure that this is the case.
+
+The lines in a work history file (with the possible exception of lines with custom tags) are ordered by nondecreasing event timestamp values, and thus, indicate the chronology of events.
 
 The types of lines (representing events) are the following (note that this table does *not* indicate a required order, since events are ordered by timestamp):
 
