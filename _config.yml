@@ -1,6 +1,3 @@
-baseurl: "http://cloudcoderdotorg.github.io/progsnap-spec"
-markdown: rdiscount
-highlighter: pygments
-
-rdiscount:
-  extensions: [smart]
+baseurl: "//cloudcoderdotorg.github.io/progsnap-spec"
+markdown: kramdown
+highlighter: rouge
