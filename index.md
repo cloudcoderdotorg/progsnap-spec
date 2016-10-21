@@ -25,7 +25,9 @@ Note that development versions (with version numbers that end in "-dev") are und
 
 # Tools
 
-Coming soon: code to read progsnap data, export progsnap data from various systems.
+A Python library for reading Progsnap data is available:
+
+> <https://github.com/cloudcoderdotorg/progsnap-python-lib>
 
 # Who is this for?
 
@@ -40,7 +42,7 @@ Progsnap is intended to be general enough to capture data produced by these syst
 
 # Status
 
-This isn't ready for prime time yet.  In fact, how did you even find out this was here?
+We are hammering version 0.1-dev of the spec into shape, and we expect to have an official 0.1 spec in the very near future.
 
 If you would like to be involved, we would love to have your input!  See the Contact section below.
 
