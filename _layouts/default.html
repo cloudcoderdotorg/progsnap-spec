@@ -2,19 +2,23 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Progsnap: {{page.title}}</title>
+		<title>{{page.title}}</title>
 		<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/site.css">
+		<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/syntax.css">
+		<link href='https://fonts.googleapis.com/css?family=Source+Serif+Pro' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
-		<div id="content">
-			<div id="header"><a href="{{site.baseurl}}/">Progsnap</a>: {{page.title}}</div>
-			<div id="content-body">
-			{{content}}
-			</div>
-			<div id="footer">
-				<a href="{{site.baseurl}}/README.html">Copyright (c) 2015-2016</a> |
-				Content is freely redistributable |
-				<a class="cc-img" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="{{site.baseurl}}/img/cc-by-sa-80x15.png" /></a>
+		<div id="wrap">
+			<div id="content">
+				<div id="header">{{page.title}}</div>
+				{{content}}
+				<div id="footer">
+					<a href="{{site.baseurl}}/README.html">Copyright (c) 2005-2016</a> |
+					Unless indicated otherwise, content is freely redistributable |
+					<a class="cc-img" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="{{site.baseurl}}/img/cc-by-sa-80x15.png" /></a>
+				</div>
+				<div id="footer-pad"></div>
 			</div>
 		</div>
 	</body>
