@@ -50,6 +50,8 @@ People:
 
 * David Hovemeyer, <dhovemey@ycp.edu> (primary contact)
 * Jaime Spacco, <jspacco@knox.edu>
+* Andrew Petersen, <andrew.petersen@utoronto.ca>
+* Arto Hellas, <arto.hellas@cs.helsinki.fi>
 * TODO: other people who want to contribute to this specification!
 
 <!-- vim:set wrap: ­-->
