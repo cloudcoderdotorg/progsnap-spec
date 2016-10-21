@@ -36,6 +36,7 @@ This is for researchers in CS education, software engineering, and programming l
 A number of educational programming environments capture fine-grained data as students work.  For example:
 
 * [CloudCoder](http://cloudcoder.org)
+* [PCRS](https://mcs.utm.utoronto.ca/~pcrs/pcrs/)
 * TODO: other systems
 
 Progsnap is intended to be general enough to capture data produced by these systems.  It is worth noting that progsnap is not the native storage format for any system, so an export tool will need to be developed for each system to convert the system's data to progsnap format.  However, once this conversion is done, any tool that understands the progsnap format can make use of the data.
