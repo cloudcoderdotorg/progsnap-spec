@@ -33,7 +33,7 @@ A Python library for reading Progsnap data is available:
 
 This is for researchers in CS education, software engineering, and programming languages who are interested in using student programming data in their research.  By defining a common format for programming assignment data, progsnap enables researchers to share data, and facilitates research that spans multiple institutions and courses.
 
-A number of educational programming environments capture fine-grained data as students work.  For example:
+A number of educational programming environments capture data as students work.  For example:
 
 * [CloudCoder](http://cloudcoder.org)
 * [PCRS](https://mcs.utm.utoronto.ca/~pcrs/pcrs/)
