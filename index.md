@@ -29,6 +29,8 @@ A Python library for reading Progsnap data is available:
 
 > <https://github.com/cloudcoderdotorg/progsnap-python-lib>
 
+The intent of the Python library is to make it easy to automate analysis of progsnap datasets.  See the [example](https://github.com/cloudcoderdotorg/progsnap-python-lib/tree/master/examples) scripts.
+
 # Who is this for?
 
 This is for researchers in CS education, software engineering, and programming languages who are interested in using student programming data in their research.  By defining a common format for programming assignment data, progsnap enables researchers to share data, and facilitates research that spans multiple institutions and courses.
