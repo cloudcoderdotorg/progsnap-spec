@@ -5,7 +5,7 @@ title: "Specification 0.1-dev"
 
 # Introduction
 
-Progsnap is a specification for data on student work on programming exercises and assignments.
+Progsnap is a specification for data on student work on programming exercises and activities.
 
 <div class="callout">
 This specification is at an early stage of development, although it is well-specified enough to be useful in its current form.  If you'd like to contribute, see the <a href="index.html">home page</a> for contact info.
@@ -19,9 +19,9 @@ Version numbers that end in "-dev" are under development, and should be expected
 
 # Data set, file encoding
 
-A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course, possibly with multiple assignments, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
+A progsnap data set is a collection of files representing data from a single course.  In this context, "course" implies a single course, possibly with multiple activities, and possibly with multiple sections and/or instructors.   Studies involving multiple courses should use separate progsnap data sets for each course.
 
-All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.  Note that some files are in subdirectories in *BaseDir*.  For example, assignment files have filenames of the form <code>assignment/<i>NNNN</i>.txt</code>, where <i>NNNN</i> is an assignment number, implying the existence of a subdirectory called <code>assignment</code> in *BaseDir*.
+All of the files in a data set are relative to a common base directory, which this specification will refer to as *BaseDir*.  The files may be stored in a filesystem directory, or may be stored in a zip file (such that *BaseDir* is the root directory of the zip file).  Implementations of tools to read progsnap data sets should support reading from both directories and zip files.  Note that some files are in subdirectories in *BaseDir*.  For example, activity files have filenames of the form <code>activity/<i>NNNN</i>.txt</code>, where <i>NNNN</i> is an activity number, implying the existence of a subdirectory called <code>activity</code> in *BaseDir*.
 
 Each file is a text file using the UTF-8 character encoding.
 
@@ -73,28 +73,24 @@ All implementations of readers of progsnap data should be prepared to accept fie
 
 As mentioned above related to file encoding, the JSON encoding of any value (belonging to a complex data type or a basic data type) must not contain any newline characters, so that the encoded value is guaranteed not to span multiple lines of the file that contains it. 
 
-## *Assignment*
+## *Activity*
 
-<div class="callout">
-This data type is likely to be renamed "Activity".
-</div>
-
-An *Assignment* value is an object specifying the location of an assignment file.
+An *Activity* value is an object specifying the location of an activity file.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
-number     | *Int*         | yes       | assignment number, which is distinct from assignment numbers of other assignments in the data set
-path       | *String*      | yes       | path (relative to *BaseDir*) of the assignment file
+number     | *Int*         | yes       | activity number, which is distinct from activity numbers of other activities in the data set
+path       | *String*      | yes       | path (relative to *BaseDir*) of the activity file
 
-Note that additional information about an assignment, such as metadata and information about tests, is stored in the assignment file (referenced by the path field of the *Assignment*.)
+Note that additional information about an activity, such as metadata and information about tests, is stored in the activity file (referenced by the path field of the *Activity*.)
 
-The `path` value identifying the path to the corresponding assignment file is relative to *BaseDir*: for example, if the assignment number is 221, then the `path` value might be `assignment/0221.txt`.
+The `path` value identifying the path to the corresponding activity file is relative to *BaseDir*: for example, if the activity number is 221, then the `path` value might be `activity/0221.txt`.
 
 ## *Test*
 
-A *Test* value is an automated test (such as a unit test) associated with an assignment.
+A *Test* value is an automated test (such as a unit test) associated with an activity.
 
-Because of the great diversity of programming languages and testing approaches that could be used in an assignment in a progsnap data set, *Test* values are not guaranteed to capture the exact semantics of a test.
+Because of the great diversity of programming languages and testing approaches that could be used in an activity in a progsnap data set, *Test* values are not guaranteed to capture the exact semantics of a test.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
@@ -105,7 +101,7 @@ output     | *String*      | no        | expected output (e.g., result value, ou
 opaque     | *Boolean*     | no        | if true, test input/output is not revealed to students
 invisible  | *Boolean*     | no        | if true, the existence of the test is not revealed to students
 
-Test numbers must start at 0 and increase by 1 for each test in the corresponding assignment.  For example, an assignment with 4 tests would have tests with numbers 0, 1, 2, and 3.
+Test numbers must start at 0 and increase by 1 for each test in the corresponding activity.  For example, an activity with 4 tests would have tests with numbers 0, 1, 2, and 3.
 
 If either the `opaque` or `invisible` field is not present, the implied default value is false.
 
@@ -166,7 +162,7 @@ snapids    | Array of *Int*  | only for "snapshot" events<sup>&Dagger;</sup> | A
 
 <sup>&dagger;</sup> The `start` field is only required for "insert" and "delete" edits; it may be omitted for "fulltext" edits
 
-<sup>&Dagger;</sup> `snapids` is a list of unique identifiers (encoded as a JSON array of *Int* values) indicating one or more *snapshots*.  A snapshot consists of one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults* (one edit event per file).  Because a specific version of a file can be part of multiple snapshots, an edit event can have multiple snapshot ids.  If the assignment involves multiple files, then each edit event belonging to a specific snapshot should include the corresponding snapshot id as one of the values of its `snapids` field.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text of the file or files by applying a series of individual edits.  Like edit ids, snapshot ids are guaranteed to be unique only within the work history file in which they appear.
+<sup>&Dagger;</sup> `snapids` is a list of unique identifiers (encoded as a JSON array of *Int* values) indicating one or more *snapshots*.  A snapshot consists of one or more edit events identifying the source file contents associated with a *Submission*, *Compilation*, and/or *TestResults* (one edit event per file).  Because a specific version of a file can be part of multiple snapshots, an edit event can have multiple snapshot ids.  If the activity involves multiple files, then each edit event belonging to a specific snapshot should include the corresponding snapshot id as one of the values of its `snapids` field.  It is *strongly* recommended that the edit event or events in a snapshot be "fulltext" events, to avoid consumers having to reconstruct the full text of the file or files by applying a series of individual edits.  Like edit ids, snapshot ids are guaranteed to be unique only within the work history file in which they appear.
 
 Edit events with types "insert" or "delete" specify the insertion or deletion of text in a file.  The `start`  field indicates the position in the edited file at which the specified `text` should be inserted or deleted.
 
@@ -219,7 +215,7 @@ statuses   | Array of *String* | yes | Array of test statuses, which are "passed
 
 The `snapid` value specifies the snapshot identifying the source file or files compiled to produce the tested executable.  It is guaranteed that there will be a *Compilation* with the same `snapid`.
 
-Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the numbering of the *Test*s in the *Assignment*: i.e., the `number` of a test can be used as an index into the `statuses` array.
+Note that the value of the statuses field is a JSON array, where each element is a string.  The ordering of the elements corresponds to the numbering of the *Test*s in the *Activity*: i.e., the `number` of a test can be used as an index into the `statuses` array.
 
 The meanings of the values in the `statuses` array are as follows:
 
@@ -252,17 +248,17 @@ contact  | *String*      | 1           | name of person to contact regarding the
 email    | *String*      | 1           | email address of person to contact regarding the data set
 courseurl | *String*      | 0..1        | optional URL of web page for the course
 
-## Assignments file
+## Activities file
 
-Each progsnap data set contains a single assignments file, whose path (relative to *BaseDir*) is `assignments.txt`.
+Each progsnap data set contains a single activities file, whose path (relative to *BaseDir*) is `activities.txt`.
 
-The assignments file specifies the assignments that are included in the data set.  It contains the following lines:
+The activities file specifies the activities that are included in the data set.  It contains the following lines:
 
 Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
-assignment | *Assignment* | 0..\*      | Reference to an assignment file
+activity | *Activity* | 0..\*      | Reference to an activity file
 
-Note that any useful progsnap data set will contain at least one assignment, since work history files are associated with assignments.
+Note that any useful progsnap data set will contain at least one activity, since work history files are associated with activities.
 
 ## Students file
 
@@ -274,24 +270,24 @@ Tag name | Type of value | Occurrences | Comment
 -------- | ------------- | ----------- | -------
 student  | *Student*     | 0..\*       | Information about a student
 
-## Assignment file
+## Activity file
 
-A progsnap data set must contain at least one assignment file, and may contain multiple assignment files.  An assignment file has a path (relative to *BaseDir*) of the form <code>assignment/<i>NNNN</i>.txt</i></code>, where *NNNN* is an integer assignment number.  It is recommended (but not required) that the assignment number is padded with leading zeroes as necessary so that all assignment filenames in a data set have the same length.
+A progsnap data set must contain at least one activity file, and may contain multiple activity files.  An activity file has a path (relative to *BaseDir*) of the form <code>activity/<i>NNNN</i>.txt</i></code>, where *NNNN* is an integer activity number.  It is recommended (but not required) that the activity number is padded with leading zeroes as necessary so that all activity filenames in a data set have the same length.
 
-An assignment file contains the following lines:
+An activity file contains the following lines:
 
 Tag name   | Type of value | Occurrences | Comment
 ---------- | ------------- | ----------- | -------
-name       | *String*      | 1           | the assignment name, e.g., "Assignment 1: Tic-Tac-Toe"
+name       | *String*      | 1           | the activity name, e.g., "Activity 1: Tic-Tac-Toe"
 language   | *String*      | 1           | the programming language (e.g., "Java", "Python", "C++")
-url        | *String*      | 0..1        | URL of a web page describing the assignment
-assigned   | *Timestamp*   | 0..1        | timestamp indicating when the assignment was made available to students)
-due        | *Timestamp*   | 0..1        | timestamp indicating when the assignment was due
-test       | *Test*        | 0..\*       | test cases for the assignment
+url        | *String*      | 0..1        | URL of a web page describing the activity
+assigned   | *Timestamp*   | 0..1        | timestamp indicating when the activity was made available to students)
+due        | *Timestamp*   | 0..1        | timestamp indicating when the activity was due
+test       | *Test*        | 0..\*       | test cases for the activity
 
 ## Work history file
 
-A work history file represents one student's work on one assignment.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an assignment number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and assignment number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
+A work history file represents one student's work on one activity.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an activity number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and activity number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
 
 Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  Exporters must ensure that timestamps match the chronology of the work history, and due to the vagaries of clocks, some post-processing may be necessary to ensure that this is the case.
 
