@@ -55,7 +55,7 @@ Each basic data type is encoded using a JSON data type.
 
 Basic data type | JSON data type | Notes
 --------------- | -------------- | -----
-*Int*           | number         | Signed, 64 bit
+*Int*           | number         | Signed, 32 bit
 *Boolean*       | boolean        | 
 *Real*          | number         | Floating point, 64 bit
 *String*        | string         | 
