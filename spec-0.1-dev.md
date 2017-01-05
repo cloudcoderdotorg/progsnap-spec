@@ -60,8 +60,11 @@ Basic data type | JSON data type | Notes
 *Real*          | number         | Floating point, 64 bit
 *String*        | string         | 
 *Timestamp*     | number         | Floating point, 64 bits <sup>\*</sup>
+*UniqueId*      | string         | See below<sup>&dagger;</sup>
 
 <sup>\*</sup> *Timestamp* is number of milliseconds since midnight, January 1, 1970, UTC; timestamps are floating point, so precision greater than milliseconds is possible
+
+<sup>&dagger;</sup> Valid characters in a unique id are upper case letters A-Z, lower case letters a-z, digits 0-9, underscores (\_), and hyphens (-); a unique id must have no more than 128 characters
 
 # Complex data types
 
@@ -108,14 +111,14 @@ If either the `opaque` or `invisible` field is not present, the implied default 
 ## *Student*
 
 <div class="callout">
-Upcoming change: student numbers (<i>Int</i>) are going to become student identifiers (<i>String</i>), to permit more flexibility in identifying students in a way that is natural for the underlying dataset.  Also, more detailed grade data will become part of this data type.
+Upcoming change: more detailed grade data will become part of this data type.
 </div>
 
 A *Student* value is an object containing anonymized information about a student.
 
 Field name | Type of value | Required? | Comment
 ---------- | ------------- | --------- | -------
-number     | *Int*         | yes       | This student's student number
+id         | *UniqueId*    | yes       | This student's unique id
 instructor | *Boolean*     | yes       | Whether student is actually an instructor or teaching assistant<sup>\*</sup>
 gender     | *String*      | no        | Student's gender<sup>&dagger;</sup>
 experience | *Int*         | no        | Self-reported prior experience: 0=none, 1=some, 2=prior coursework
@@ -287,7 +290,7 @@ test       | *Test*        | 0..\*       | test cases for the activity
 
 ## Work history file
 
-A work history file represents one student's work on one activity.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an activity number, and *XXXX* is a student number.  It is recommended (but not required) that the student number and activity number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
+A work history file represents one student's work on one activity.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an activity number, and *XXXX* is a student id (corresponding to the student's `id` value.)  It is recommended (but not required) that the student id and activity number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
 
 Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  Exporters must ensure that timestamps match the chronology of the work history, and due to the vagaries of clocks, some post-processing may be necessary to ensure that this is the case.
 
