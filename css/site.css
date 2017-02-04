@@ -95,7 +95,6 @@ a.cc-img {
 
 html {
 	min-height: 100%;
-	font-family: 'Source Serif Pro', serif;
 }
 
 html, body {
@@ -149,7 +148,7 @@ tr:nth-child(even) {
 }
 
 pre, code, tt {
-	font-family: 'Source Code Pro', monospace;
+	font-family: monospace;
 }
 
 pre {
