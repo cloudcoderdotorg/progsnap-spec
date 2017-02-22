@@ -31,7 +31,7 @@ Each file (with the exception of README.txt) is encoded as a sequence of lines. 
 { "tag" : "<i>tagname</i>", "value" : <i>JsonValue</i> }
 </pre>
 
-Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.  Note that the line may or may not contain horizontal whitespace between the JSON tokens.
+Each line is a tagged data value, where *tagname* is the name of the tag, and *JsonValue* is a single [JSON](http://www.json.org/) value.  Note that the encoding of *JsonValue* must not contain any literal newline characters.  In general, it is guaranteed that each line of the file encodes a single JSON object with two fields, `tag` and `value`.  Note that the line may or may not contain horizontal whitespace between the JSON tokens.
 
 Each file is a collection of lines, with tags and values specified in the file type's description (see <i>Types of files</i> below).  Each type of line is specified with a number of occurrences:
 
@@ -132,7 +132,7 @@ finalgrade | *Real*        | no        | Final grade in the course
 
 ## *Position*
 
-A *Position* value represents a position in a file.
+A *Position* value represents a position in a text file (typically, a source file).
 
 Field name | Type of value | Required | Comment
 ---------- | ------------- | -------- | -------
@@ -192,7 +192,9 @@ ts         | *Timestamp*   | yes       | Timestamp of compilation event
 snapid     | *Int*         | yes       | Snapshot id identifying text of submitted code
 result     | *String*      | yes       | Result of compilation: "success" or "failure"
 
-TODO: allow compiler diagnostics to be recorded?
+<div class="callout">
+A future version of this specification will likely add compiler diagnostics to this data type.
+</div>
 
 The `snapid` value specifies the snapshot identifying the compiled source file or files.  It is guaranteed that there will be a *Submission* with the same `snapid`.
 
@@ -290,7 +292,7 @@ test       | *Test*        | 0..\*       | test cases for the activity
 
 ## Work history file
 
-A work history file represents one student's work on one activity.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an activity number, and *XXXX* is a student id (corresponding to the student's `id` value.)  It is recommended (but not required) that the student id and activity number are padded with leading zeroes as necessary so that all work history filenames in a dataset have the same length.
+A work history file represents one student's work on one activity.  Each progsnap data set will typically have many work history files.  Work history files have paths (relative to *BaseDir*) of the form <code>history/<i>NNNN</i>/<i>XXXX</i>.txt</code>, where *NNNN* is an activity number, and *XXXX* is a student id (corresponding to the student's `id` value.)
 
 Each line in a work history file represents an event.  One common feature of each event (other than those tagged with custom tags beginning with *x-*) is that the value of the line is guaranteed to have a field called "ts" whose value is a *Timestamp*, which records the time when the event occurred.  Exporters must ensure that timestamps match the chronology of the work history, and due to the vagaries of clocks, some post-processing may be necessary to ensure that this is the case.
 
