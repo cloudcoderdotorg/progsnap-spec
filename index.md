@@ -3,6 +3,10 @@ layout: default
 title: "Home page"
 ---
 
+# IMPORTANT
+
+Progsnap has been superseded by [ProgSnap 2](https://cssplice.github.io/progsnap2).  This website will remain here for posterity, but we do not recommend using this original version of Progsnap.  The new one is better, has a data model that is both richer and easier to analyze, and has more support behind it.
+
 # What is Progsnap?
 
 Progsnap is a data format for programming assignment snapshots.
